@@ -34,21 +34,29 @@ def merge_entry(refererURL, entry_dict):
             if k == 'count':
                 merge_dict[key][k] += 1
 
+
+    if 'maxParams' not in merge_dict:
+            merge_dict['maxParams'] = 0
+
+
+    merge_dict['maxParams'] = max(merge_dict['maxParams'], len(entry_dict))
+
     print "Merge dict"
     print merge_dict
 
     #add the merge_dict to memcache key of refererURL
     settings.mc[refererURL] = merge_dict
 
-    print settings.mc
 
     #Check and update the max_parameters in memcache
     if not settings.mc.get('maxParams'):
             settings.mc['maxParams'] = 0
-    else:
-            settings.mc['maxParams'] = len(entry_dict)
+
+    prevMax = settings.mc.get('maxParams')
+    settings.mc['maxParams'] = max(prevMax, len(entry_dict))
 
 
+    print settings.mc['maxParams']
 
 def trainHeader(request):
     if hasattr(request, 'headers'):
@@ -105,6 +113,7 @@ def get_counts_dict(entry_dict):
 
 
 def processEntries(refererURL, entry_dict):
+    print "referer: "+refererURL
     #refererURL = request.headers.getheader('Referer')
     if refererURL == None:
         print "BLLLLLL"
@@ -221,10 +230,11 @@ def trainValues(request):
 
 
     values_dict['maxParams'] = max(values_dict['maxParams'], len(entry_dict))
-    print "maxParams (across all pages) = " + str(values_dict['maxParams'])
 
     merge_entry(referer,entry_dict)
 
+    print "From cache: "
+    print settings.mc['maxParams']
 
 
 
