@@ -6,36 +6,55 @@ import string
 
 def testValidate(referer,entry_dict):
 
-    print settings.mc.get(referer)
 
+    #print settings.mc[referer]['maxParams']
     if referer in settings.mc:
+            # total param for all pages is less than for current request
+            if (len(entry_dict) > settings.mc['maxParams']):
+                print " Test Fail: number of parmas is greater than maxParam observed for all request "
+                return -1
             test_dict= settings.mc[referer]
-
+            #maxparam per url check
+            if (len(entry_dict)> test_dict['maxParams']):
+                print " Test Fail: number of parmas is greater than maxParam observed for the specific request "
+                return -1
             print test_dict
-            print "%%%%%%%%%%%%%%%%%"
+            print "%%%%%%%%%%"
             print entry_dict
             for key in test_dict:
                 for k in entry_dict:
                     if key == k:
                         value = settings.mc[referer][key]
-                        print key
+                        avglen = float(value['length']) / float(value['count'])
+                        stdev = avglen*0.5
+                        print "PARAMETER="+str(key)
 
-                        print k
+
                         print entry_dict
                         print value
                         print "!!!!!!!!!!!!!!"
                         print entry_dict[k]
                         print "count len char set"
-                        if entry_dict[k]['length'] <= value['length'] and (entry_dict[k]['characterSet'] or value['characterSet']):
-                            print "TEST PASS PROCEED TO SERVER BUT HOW???"
+                        if ((float(entry_dict[k]['length']) <= (avglen+stdev)) and (float(entry_dict[k]['length']) >= (avglen-stdev))):
+                            print "Length test pass "
 
                         else:
-                            print "TEST FAIL SEND SOME MISCHIVIOUS TO CONSOLE"
+                            print "Test Fail: unexpected length of parameter"
+                            return -1
+                        if  ((int(entry_dict[k]['characterSet']) & int(value['characterSet']))==int(entry_dict[k]['characterSet'])):
+                            print "charset Test pass "
+                            print entry_dict[k]['characterSet']
+                            print value['characterSet']
+
+                        else:
+                            print "Test Fail: unexpected character set for parameter"
+                            print entry_dict[k]['characterSet']
+                            print value['characterSet']
                             return -1
 
-                        print value['count']
-                        print value['length']
-                        print value['characterSet']
+                        # print value['count']
+                        # print value['length']
+                        # print value['characterSet']
 
                 # value=settings.mc.get(key)
                 # count = value['count']
@@ -47,6 +66,9 @@ def testValidate(referer,entry_dict):
                 # print length
                 # print charset
     return 1
+
+
+
 
 
 
@@ -102,6 +124,7 @@ def get_counts_dict(entry_dict):
         entry_dict[entry]['characterSet'] = findCharacterSet(entry_value)
 
         entry_dict[entry]['length'] = entry_length
+        entry_dict[entry]['count']  = 1
 
     return entry_dict
 
@@ -171,16 +194,16 @@ def testValues(request):
         entry_dict = get_counts_dict(entry_dict)
     else:
         return
-    print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-    print referer
-    print entry_dict
-    print  "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"
+    # print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+    # print referer
+    # print entry_dict
+    # print  "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"
     check =testValidate(referer,entry_dict)
     if check == 1:
-         print "reaching here testvalidate 1"
+         print "testvalidate 1"
          return 1
     else:
-        print "reaching here testvalidate -1"
+        print " testvalidate -1"
         return -1
 
 
