@@ -5,6 +5,7 @@ import trainData
 import re
 import urllib
 import testData
+import blacklistExp
 
 class HTTPRequest(BaseHTTPRequestHandler):
     def __init__(self, request_text):
@@ -80,15 +81,7 @@ def parseData(data):
 def signatureValidation(request):
     status = 1
 
-    regex_sqlattack = r"\b(?i)(ALTER|CREATE|DELETE|DROP|EXEC(UTE){0,1}|INSERT( +INTO){0,1}|MERGE|SELECT|UPDATE|UNION( +ALL){0,1})\b"
-
-    # The above regular expression says to search for the word,
-    # ALTER, CREATE, DELETE, DROP, EXEC, EXECUTE, INSERT, INSERT INTO, MERGE, SELECT, UPDATE, UNION
-    # or UNION ALL. The \b at the beginning and ending tell the regular expression engine to search for
-    # whole word matches. That is, the word CREATED should not be treated as a match because it contains the
-    # letters that make the word CREATE.
-
-    regex_otherattack = r"(?i)((<script|script>)|(\b(bot)\b)|(\.\.\/))"
+    regex_patterns = '|'.join(x for x in blacklistExp.regex_blacklistExp)
 
     raw_HeaderValueString = ''
     raw_ParamValueString = ''
@@ -97,8 +90,7 @@ def signatureValidation(request):
     for value in request.headers.keys():
         raw_HeaderValueString = raw_HeaderValueString + str(request.headers.getrawheader(value))
 
-    if re.search(regex_sqlattack,raw_HeaderValueString) or \
-        re.search(regex_otherattack, raw_HeaderValueString):
+    if re.search(regex_patterns,raw_HeaderValueString):
         status = -1
         return status
 
@@ -122,8 +114,7 @@ def signatureValidation(request):
 
         raw_ParamValueString = prep_ParamString(val_Parameters)
 
-        if re.search(regex_sqlattack, raw_ParamValueString) or \
-                re.search(regex_otherattack, raw_ParamValueString):
+        if re.search(regex_patterns, raw_ParamValueString):
             status = -1
             return status
     else:
@@ -136,8 +127,7 @@ def signatureValidation(request):
             return status
         raw_ParamValueString = prep_ParamString(val_Parameters)
 
-        if re.search(regex_sqlattack, raw_ParamValueString) or \
-                re.search(regex_otherattack, raw_ParamValueString):
+        if re.search(regex_patterns, raw_ParamValueString):
             status = -1
             return status
 
