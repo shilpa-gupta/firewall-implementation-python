@@ -76,6 +76,7 @@ settings.mc = pylibmc.Client([Constants.MEMCACHE_SERVER], binary=True,behaviors=
 settings.mod = mod
 if settings.mod == 'reset':
     print("reseting cache\n")
+    settings.mc.flush_all()
     exit()
 
 g_IOManager = iomanager.IOManager()
