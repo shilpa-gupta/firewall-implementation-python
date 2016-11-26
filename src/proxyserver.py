@@ -59,13 +59,10 @@ if(len(sys.argv) > 2 or len(sys.argv) < 2):
     exit()
 cmd = sys.argv[1]
 if(cmd == 'reset'):
-    print "reset command passed"
     mod = "reset"
 elif(cmd == 'start_train'):
-    print "start_train command passed"
     mod = "train"
 elif(cmd == 'start_test'):
-    print "start_test command passed"
     mod = "test"
 else:
     print "Please pass a valid command"

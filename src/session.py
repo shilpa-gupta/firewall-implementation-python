@@ -5,10 +5,8 @@ import processData
 class SessionFactory(object):
     def __init__(self):
         pass
-
     def new(self, *args, **kwargs):
         return Session(*args, **kwargs)
-
     def delete(self, session):
         assert (isinstance(session, Session))
         del session
@@ -74,7 +72,6 @@ class Session(object):
         if processData.parseData(data):
             self.p2s_start_write(data)
         else:
-            #data = "you are doing something mischevious\n"
             data = processData.prep_error_response("you are doing something mischevious")
             self.c2p_start_write(data)
             self.p2s_stream.close()
@@ -87,7 +84,6 @@ class Session(object):
 
     def _c2p_io_write(self, data):
         if data is None:
-            # None means (gracefully) close-socket  (a "close request" that was queued...)
             self.c2p_state = Session.State.CLOSED
             try:
                 self.c2p_stream.close()
@@ -98,7 +94,6 @@ class Session(object):
             try:
                 self.c2p_stream.write(data, callback=self.on_c2p_done_write)
             except tornado.iostream.StreamClosedError:
-                # Cancel the write, we will get on_close instead...
                 self.c2p_writing = False
 
     def _p2s_io_write(self, data):
@@ -119,13 +114,9 @@ class Session(object):
         if self.c2p_state != Session.State.CONNECTED: return
 
         if not self.c2p_writing:
-            # If we're not currently writing
-            assert (not self.s2c_queued_data)  # we expect the  queue to be empty
-
-            # Start the "real" write I/O operation
+            assert (not self.s2c_queued_data) 
             self._c2p_io_write(data)
         else:
-            # Just add to the queue
             self.s2c_queued_data.append(data)
 
     def p2s_start_write(self, data):
