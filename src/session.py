@@ -72,7 +72,7 @@ class Session(object):
         if processData.parseData(data):
             self.p2s_start_write(data)
         else:
-            data = processData.prep_error_response("you are doing something mischevious")
+            data = processData.prep_error_response("you are doing something mischievous")
             self.c2p_start_write(data)
             self.p2s_stream.close()
 
