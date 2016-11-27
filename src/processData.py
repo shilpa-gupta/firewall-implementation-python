@@ -55,6 +55,12 @@ def parseData(data):
     # except AttributeError:
     #     print "Request header not present !"
 
+    print "validating signature"
+    status = signatureValidation(request)
+    if (status == -1):
+        print "mischevious signature"
+        return False
+    print "signature validation successful"
 
     if settings.mod == 'train':
         #For training, send the parsed data to trainData.py
@@ -62,13 +68,6 @@ def parseData(data):
             print"REQUEST RECV"
             trainData.trainRequest(request)
     elif settings.mod == 'test':
-        print "validating signature"
-        status = signatureValidation(request)
-        if (status == -1):
-            print "mischevious signature"
-            return False
-        print "signature validation successful"
-        status = 1
         print "Entering testData File"
         status = testData.testRequest(request)
         if (status == -1):
