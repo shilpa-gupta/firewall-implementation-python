@@ -6,7 +6,12 @@ import string
 
 def testValidate(referer,entry_dict):
 
-
+    print("**********************")
+    print(settings.mc['maxParams'])
+    print("**********************")
+    if (len(entry_dict) > settings.mc['maxParams']):
+        print " Test Fail: number of parmas is greater than maxParam observed for all request "
+        return -1
     #print settings.mc[referer]['maxParams']
     if referer in settings.mc:
             # total param for all pages is less than for current request
@@ -51,20 +56,7 @@ def testValidate(referer,entry_dict):
                             print entry_dict[k]['characterSet']
                             print value['characterSet']
                             return -1
-
-                        # print value['count']
-                        # print value['length']
-                        # print value['characterSet']
-
-                # value=settings.mc.get(key)
-                # count = value['count']
-                # length = value['length']
-                # charset = value['characterSet']
-                #print key
                 print "##########################"
-                # print count
-                # print length
-                # print charset
     return 1
 
 
@@ -74,26 +66,8 @@ def testValidate(referer,entry_dict):
 
 
 
-# def testHeader(request):
-#     if hasattr(request, 'headers'):
-#          print request.headers
-#          print "header present"
-#     else:
-#         print "No header attribute"
-#         return False
-#
-#         # code to train WAF with header params
-#     return True
-
 def findCharacterSet(s):
     bitmap = 0
-    # if s.isdigit():
-    #     bitmap |= Constants.HAS_NUM_ONLY
-    #     print "digits only"
-    #
-    # elif s.isalpha():
-    #     bitmap |= Constants.HAS_AL_ONLY
-    #     print "alpha only"
 
     if any(c.isalpha() for c in s):
         bitmap |= Constants.HAS_AL
@@ -157,7 +131,8 @@ def splitValues(request):
     print "PARAM STRING = "+paramString
 
     bodyEntries = paramString.split('&')
-
+    print("^^^^^^^^^^^^^^^")
+    print(bodyEntries)
     correct_values = False
     for entry in bodyEntries:
         entry = entry.split('=')
@@ -194,10 +169,6 @@ def testValues(request):
         entry_dict = get_counts_dict(entry_dict)
     else:
         return
-    # print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-    # print referer
-    # print entry_dict
-    # print  "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"
     check =testValidate(referer,entry_dict)
     if check == 1:
          print "testvalidate 1"

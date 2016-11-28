@@ -65,7 +65,7 @@ elif(cmd == 'start_train'):
 elif(cmd == 'start_test'):
     mod = "test"
 else:
-    print "Please pass a valid command"
+    print("Please pass a valid command")
     exit()
 
 settings.init()
