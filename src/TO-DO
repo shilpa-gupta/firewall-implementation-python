@@ -1,6 +1,0 @@
-1. Handle the case when apache is down
-2. use caching for storing the data
-3. check if threading working fine
-4. firewall software on system to make sure only internal process can access the port
-5. receive data from client in a loop it can be bigger then 4096
-6. why is it slow //done
