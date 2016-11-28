@@ -1,0 +1,21 @@
+Preferred OS - Linux Ubuntu/windows
+Packages to be installed - 
+Python version - 2.7 - https://www.python.org
+Tornado  -  “pip install tornado” 
+libMemcached- http://libmemcached.org/libMemcached.html
+Pylibmc - “pip install pylibmc”
+
+Configuring the web application -   
+  We host our reverse proxy on default port 80 and web server on port 8008. You can configure these port values in Constant.py file of reverse proxy.  var - WEB_HOST_PORT for web server port and RP_PORT for reverse proxy port.
+
+  Now you need to protect port 8008 from direct access, that can be done using ufw. 
+  
+  start web server
+  Run the file proxyserver.py with one of the following command line arguments -
+  e.g. sudo python proxyserver.py "start_train" this will start the reverse proxy on port 80 in train mode.
+           start_train - To run the reverse proxy  in training mode.
+           start_test - To run the reverse proxy in testing mode.
+           reset - To reset the training data .    
+  After surfing the website , stop and restart the reverse proxy in testing mode.    
+
+  To modify the blacklist of signatures, add your string in file blacklistExp.py.
